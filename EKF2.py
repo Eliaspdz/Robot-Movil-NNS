@@ -4,7 +4,7 @@ import numpy as np
 class EKF:
     def __init__(self, n=3, p=1, q=1, r=1, g=1):
         self.z = None
-        self.w = np.random.rand(n, 1) * 0.05
+        self.w = np.random.rand(n, 1) - 0.5
         self.y = 0
 
         self.p = np.diag(np.ones(n)) * p
@@ -14,7 +14,7 @@ class EKF:
 
     def training(self, e1, s, sp):
         h = self.get_z(s, sp)
-     #   h = h.reshape(((len(s)), 1))
+        #h = h.reshape(((len(s)), 1))
         ph = np.dot(self.p, h)
         matriz = self.r + np.dot(h.T, ph)
         inv = np.linalg.inv(matriz)
@@ -26,8 +26,7 @@ class EKF:
         return self.w
 
     def __neg__(self, x, sp):
-       # print(np.power((1 / (1 + np.exp(-x))), sp))
-        return np.power((1 / (1 + np.exp(-x))), sp)  # funcion sigmoide con el dato en negativo
+        return 1 / ((1 + np.exp(-x)) ** sp)  # funcion sigmoide con el dato en negativo
 
     def get_z(self, s, sp):
         # Verificar que los dos arrays tienen el mismo tamaño
