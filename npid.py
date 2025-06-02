@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-import rospy
+
 import numpy as np
 
 class nPID:
@@ -13,11 +12,12 @@ class nPID:
 		self.Q = np.diag(np.ones(n))
 		self.R = 0.1
 
-	def control_u(self, x,alpha=0.05):
-		self.alpha = alpha
-		self.v = np.dot(self.w.T,x)
-		self.y = np.tanh(self.v*self.alpha)
-		return self.y*self.beta
+	def control_u(self, x,alpha=0.09):
+		self.alpha = alpha #Guarda el valor de alpha
+		self.v = np.dot(self.w.T,x) #producto punto entre W ( 3 pesos PID) Transpuesto por el error --
+		#De las ganancias PID  []
+		self.y = np.tanh(self.v*self.alpha) # W (pesos) * entrada (x los Valores pid)
+		return self.y*self.beta #Retorna tres datos despues de la funcion de activacion * learning rate
 		
 	def fit(self,error,x,eta=0.01):
 		H = self.get_H(x)
@@ -32,5 +32,5 @@ class nPID:
 		self.P = self.P - np.dot(k,np.dot(H.T, self.P)) + self.Q
 		
 	def get_H(self,x):
-		del_phi = (1 - self.y*self.y)*x*self.beta*self.alpha
+		del_phi = (1 - self.y*self.y)*x*self.beta*self.alpha #Derivada de la tangente
 		return del_phi
